@@ -1,40 +1,44 @@
-// import 
-import express from "express";
+// server.js
+
 import dotenv from "dotenv";
-import cors from "cors";
- dotenv.config();
+dotenv.config();
 
- import errorHandler from "./middlewares/errorHandler.js";
- import authRouter from "./routes/authRoute.js";
- import productRouter from "./routes/productRoute.js";
- import verificationRoutes from "./routes/verifyRoute.js";
+import app from "./src/app.js";
+import connectDB from "./src/config/db.js";
+import User from "./src/models/user.model.js";
 
- import connectDB from "./config/db.js";
- connectDB();
+import logger from "./src/middleware/logging.middleware.js";
 
-// server
-const app = express();
+// Connect DB
+await connectDB();
 
-app.use(express.json());
+// Create default admin
+async function createDefaultAdmin() {
+  try {
+    const email = process.env.DEFAULT_ADMIN_EMAIL;
+    const exists = await User.findOne({ email });
 
-// use auth router
-app.use(cors({
-  origin: "http://localhost:3001", // رابط الفرونت عندك
-  credentials: true, // لو بترسل كوكيز
-}));
+    if (!exists) {
+      await User.create({
+        name: "Super Admin",
+        email,
+        password: process.env.DEFAULT_ADMIN_PASSWORD,
+        role: "admin",
+        isVerified: true,
+      });
+      console.log("✅ Default admin created");
+    } else {
+      console.log("ℹ️ Default admin exists");
+    }
+  } catch (err) {
+    console.error("❌ Error creating default admin:", err);
+  }
+}
 
-app.use("/api/auth", authRouter);
-app.use("/api/products", productRouter);
-app.use("/api/verify", verificationRoutes);
+await createDefaultAdmin();
 
-
-
-
+// Start Server
 const PORT = process.env.PORT || 3000;
-
-app.listen(process.env.PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.listen(PORT, () => {
+  logger.info(`Server running on port ${PORT}`);
 });
-
-app.use(errorHandler);
-
