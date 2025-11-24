@@ -9,6 +9,9 @@ import User from "./src/models/user.model.js";
 
 import logger from "./src/middleware/logging.middleware.js";
 
+import { createServer } from "http";
+import { Server } from "socket.io";
+
 // Connect DB
 await connectDB();
 
@@ -39,6 +42,27 @@ await createDefaultAdmin();
 
 // Start Server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const httpServer = createServer(app);
+
+export const io = new Server(httpServer, {
+  cors: {
+    origin: "*"
+  }
+});
+
+io.on("connection", (socket) => {
+  console.log("🔥 User connected:", socket.id);
+
+  // ينضم المستخدم لغرفة حسب الـ userId
+  socket.on("join", (userId) => {
+    socket.join(userId);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("❌ User disconnected:", socket.id);
+  });
+});
+
+httpServer.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
 });

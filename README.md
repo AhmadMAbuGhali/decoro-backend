@@ -1,47 +1,50 @@
 # 🛒 Decoro Backend (Node.js + Express + MongoDB)
 
-Decoro هو مشروع Backend متكامل يوفر إدارة منتجات، مستخدمين، طلبات، نظام تحقق عبر البريد الإلكتروني، وصلاحيات Admin كاملة.  
-هذا المستودع يمثل النسخة الرسمية للـ API الخاصة بتطبيق Decoro (Web Dashboard + Mobile App).
+Decoro is a complete backend system that provides product management, user authentication, orders, admin operations, email verification, payments, notifications, and real‑time chat.
+This repository represents the official API for Decoro (Dashboard + Mobile App).
 
 ---
 
-## 🚀 المميزات الأساسية
+## 🚀 Key Features
 
-- نظام تسجيل دخول وتسجيل مستخدمين (JWT + Refresh Tokens)
-- نظام تسجيل دخول خاص بالأدمن
-- إدارة كاملة للمنتجات (CRUD + رفع الصور على Cloudinary)
-- نظام سلة / طلبات (Orders)
-- إدارة مستخدمين للأدمن
-- إرسال أكواد تحقق عبر البريد (OTP Email Verification)
-- رفع صور رئيسية وصور معرض منتج
-- نظام Logs باستخدام Winston
-- أفضل ممارسات الهيكلة المتقدمة Enterprise Folder Structure
+- Full user authentication system (JWT + Refresh Tokens)
+- Admin authentication & permissions
+- Complete product management (CRUD + Cloudinary image upload)
+- Cart & Orders system
+- Admin user management
+- Email verification (OTP)
+- Product image gallery & main image upload
+- Logging system with Winston
+- Real‑time notifications (FCM) and admin–user chat (Socket.io)
+- Enterprise‑level folder structure
 
 ---
 
-## 🧱 التقنيات المستخدمة
+## 🧱 Technologies Used
 
 - Node.js (ESM Modules)
 - Express.js
 - MongoDB + Mongoose
-- Cloudinary (للصور)
-- Nodemailer (للتحقق)
-- JWT Access Tokens + Refresh Tokens
+- Cloudinary (Images)
+- Nodemailer (Email OTP)
+- JWT (Access & Refresh Tokens)
 - Helmet + CORS + Morgan
-- Multer (لرفع الصور)
+- Multer (File uploads)
 - Winston Logging
+- Socket.io (Live Chat)
+- Firebase Cloud Messaging (Push Notifications)
 
 ---
 
-## 📦 تثبيت المشروع وتشغيله محليًا
+## 📦 Installation & Local Setup
 
-### 1) تثبيت الحزم
+### 1) Install Dependencies
 ```bash
 npm install
 ```
 
-### 2) إنشاء ملف البيئة `.env`
-استخدم القيم التالية:
+### 2) Create `.env` File
+Use the following values:
 
 ```env
 PORT=3000
@@ -66,19 +69,19 @@ DEFAULT_ADMIN_PASSWORD=Admin@123
 NODE_ENV=development
 ```
 
-### 3) تشغيل السيرفر
+### 3) Start Server
 ```bash
 npm start
 ```
 
-السيرفر سيعمل على:
+Server will run on:
 ```
 http://localhost:3000
 ```
 
 ---
 
-## 📁 هيكل المشروع
+## 📁 Project Structure
 
 ```
 src/
@@ -94,13 +97,17 @@ src/
 │   ├── admin/
 │   ├── products/
 │   ├── orders/
-│   └── verify/
+│   ├── privacy/
+│   ├── notifications/
+│   ├── chat/
+│   ├── ratings/
+│   └── payments/
 └── utils/
 ```
 
 ---
 
-# 🧠 API Documentation (مختصر وواضح للمطورين)
+# 🧠 API Documentation (Clean & Developer‑Friendly)
 
 Base URL:
 ```
@@ -109,47 +116,47 @@ http://localhost:3000/api
 
 ---
 
-## 🔵 AUTH
+# 🔵 AUTH
 
-### Register
+### Register  
 POST `/auth/register`
 ```json
 { "name": "Ahmad", "email": "a@mail.com", "password": "123456" }
 ```
 
-### Login
+### Login  
 POST `/auth/login`
 ```json
 { "email": "a@mail.com", "password": "123456" }
 ```
 
-### Refresh
+### Refresh  
 POST `/auth/refresh`
 ```json
 { "refreshToken": "xxx" }
 ```
 
-### Logout
+### Logout  
 POST `/auth/logout`
 ```json
 { "refreshToken": "xxx" }
 ```
 
-### My Profile
+### My Profile  
 GET `/auth/me`  
-Headers: `Bearer accessToken`
+Headers: `Authorization: Bearer <token>`
 
 ---
 
-## 🟣 Email Verification
+# 🟣 Email Verification
 
-### Send Code
+### Send OTP  
 POST `/verify/send`
 ```json
 { "email": "a@mail.com", "type": "email_verification" }
 ```
 
-### Confirm
+### Verify OTP  
 POST `/verify/confirm`
 ```json
 {
@@ -161,40 +168,38 @@ POST `/verify/confirm`
 
 ---
 
-## 🟢 Products
+# 🟢 Products
 
-### Create Product (Admin)
+### Create Product (Admin)  
 POST `/products`
 
-### Get All
+### Get All Products  
 GET `/products`
 
-### Get One
+### Get Product By ID  
 GET `/products/:id`
 
-### Update
+### Update  
 PUT `/products/:id`
 
-### Delete
+### Delete  
 DELETE `/products/:id`
 
-### Upload Main Image
-POST `/products/:id/image`
-
-Form-Data:
+### Upload Main Image  
+POST `/products/:id/image`  
+Form‑Data:
 ```
 image: file
 ```
 
-### Upload Gallery Images
-POST `/products/:id/gallery`
-
-Form-Data:
+### Upload Gallery  
+POST `/products/:id/gallery`  
+Form‑Data:
 ```
 image: file[] (multiple)
 ```
 
-### Delete Gallery Image
+### Delete Gallery Image  
 POST `/products/:id/gallery/delete`
 ```json
 { "imageId": "public_id" }
@@ -202,9 +207,9 @@ POST `/products/:id/gallery/delete`
 
 ---
 
-## 🟠 Orders
+# 🟠 Orders
 
-### Create
+### Create  
 POST `/orders`
 ```json
 {
@@ -217,59 +222,98 @@ POST `/orders`
 }
 ```
 
-### Get All (Admin)
+### Get All (Admin)  
 GET `/orders`
 
-### Get one
+### Get One  
 GET `/orders/:id`
 
-### Update status
+### Update Status  
 PUT `/orders/:id/status`
 ```json
 { "status": "shipped" }
 ```
 
-### Get user orders
+### Get User Orders  
 GET `/orders/user/:userId`
 
-### Delete
+### Delete  
 DELETE `/orders/:id`
 
 ---
 
-## 🔴 Admin
-
-### Admin Login
-POST `/admin/auth/login`
-
-### Admin Me
+# 🔴 Admin Auth  
+POST `/admin/auth/login`  
 GET `/admin/auth/me`
 
 ---
 
-## 🔴 Admin Users
-
-### Get All Users
-GET `/admin/users`
-
-### Get One User
-GET `/admin/users/:id`
-
-### Create User
-POST `/admin/users`
-
-### Update User
-PUT `/admin/users/:id`
-
-### Delete User
+# 🔴 Admin User Management  
+GET `/admin/users`  
+GET `/admin/users/:id`  
+POST `/admin/users`  
+PUT `/admin/users/:id`  
 DELETE `/admin/users/:id`
 
 ---
 
-## 📌 المساهمة بالمشروع
-PRs مرحب بها. يرجى المحافظة على أسلوب الكود ونظافة البنية.
+# 🟡 Payments (Paymob + PayPal)
+
+### Create Payment  
+POST `/payments/create`
+```json
+{
+  "amount": 150,
+  "currency": "EGP",
+  "provider": "paymob",
+  "method": "card",
+  "orderId": "order_id",
+  "returnUrl": "https://yourapp.com/success",
+  "cancelUrl": "https://yourapp.com/cancel"
+}
+```
+
+### Webhooks  
+POST `/payments/webhook/paymob`  
+POST `/payments/webhook/paypal`
 
 ---
 
-## 📄 الرخصة
+# 🟪 Ratings
+
+POST `/ratings/:productId`  
+GET `/ratings/:productId`
+
+---
+
+# 🔔 Notifications
+
+POST `/notifications`  
+GET `/notifications`  
+PUT `/notifications/:id/read`
+
+---
+
+# 💬 Chat (Real‑Time)
+
+GET `/chat/:userId`  
+POST `/chat/send`
+
+(Socket.io handles live messaging)
+
+---
+
+# 📜 Privacy Policy
+
+GET `/privacy`  
+PUT `/privacy` (Admin)
+
+---
+
+## 🤝 Contributing
+Pull requests are welcome.
+
+---
+
+## 📄 License
 MIT License

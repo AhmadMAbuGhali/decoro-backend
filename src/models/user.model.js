@@ -31,7 +31,12 @@ const userSchema = new mongoose.Schema(
     resetPasswordCode: String,
     resetPasswordExpires: Date,
     phone: { type: String, index: true, sparse: true },
-  phoneVerified: { type: Boolean, default: false },
+    phoneVerified: { type: Boolean, default: false },
+    googleId: { type: String, index: true, sparse: true },
+    facebookId: { type: String, index: true, sparse: true },
+    appleId: { type: String, index: true, sparse: true },
+    avatar: { type: String },
+    fcmToken: { type: String },
   },
   { timestamps: true }
 );

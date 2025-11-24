@@ -1,56 +1,57 @@
-// src/modules/orders/order.controller.js
-
-import asyncHandler from "express-async-handler";
 import orderService from "./order.service.js";
-import ApiError from "../../core/errors/ApiError.js";
+import PaymentTransaction from "../../models/paymentTransaction.model.js";
 
-class OrderController {
-  // Convert to DTO
-  toDto(order) {
-    const o = order.toObject();
-    return {
-      id: o._id,
-      user: o.user,
-      products: o.products,
-      totalPrice: o.totalPrice,
-      status: o.status,
-      createdAt: o.createdAt,
-      updatedAt: o.updatedAt,
-    };
+export const createOrder = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { address, paymentMethod = "card", currency = "EGP", metadata = {} } = req.body;
+
+    if (!address || !address.fullName || !address.phone || !address.city || !address.street) {
+      return res.status(400).json({ message: "Address fields missing" });
+    }
+
+    const order = await orderService.createOrderFromCart(userId, address, paymentMethod, currency, metadata);
+
+    res.status(201).json({ order });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
+};
 
-  createOrder = asyncHandler(async (req, res) => {
-    const order = await orderService.createOrder(req.body);
-    res.status(201).json(this.toDto(order));
-  });
-
-  getAllOrders = asyncHandler(async (req, res) => {
-    const orders = await orderService.getAllOrders();
-    res.json(orders.map((o) => this.toDto(o)));
-  });
-
-  getOrderById = asyncHandler(async (req, res) => {
+export const getOrder = async (req, res) => {
+  try {
     const order = await orderService.getOrderById(req.params.id);
-    res.json(this.toDto(order));
-  });
+    res.json(order);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
 
-  updateOrderStatus = asyncHandler(async (req, res) => {
-    const order = await orderService.updateOrderStatus(
-      req.params.id,
-      req.body.status
-    );
-    res.json(this.toDto(order));
-  });
+export const getUserOrders = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const orders = await orderService.getUserOrders(userId);
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
-  getUserOrders = asyncHandler(async (req, res) => {
-    const orders = await orderService.getUserOrders(req.params.userId);
-    res.json(orders.map((o) => this.toDto(o)));
-  });
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await orderService.getAllOrders();
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
-  deleteOrder = asyncHandler(async (req, res) => {
-    const result = await orderService.deleteOrder(req.params.id);
-    res.json(result);
-  });
-}
-
-export default new OrderController();
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const updated = await orderService.updateOrderStatus(req.params.id, status);
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
