@@ -13,6 +13,9 @@ import verificationRoutes from "./modules/verify/verify.route.js";
 import adminAuthRouter from "./modules/admin/adminAuth.routes.js";
 import adminUsersRouter from "./modules/admin/adminUsers.routes.js";
 
+import reviewRouter from "./modules/reviews/review.route.js";
+
+
 import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
@@ -36,6 +39,7 @@ app.use("/api/products", productRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/verify", verificationRoutes);
+app.use("/api/reviews", reviewRouter);
 
 app.use("/api/admin/auth", adminAuthRouter);
 app.use("/api/admin/users", adminUsersRouter);
