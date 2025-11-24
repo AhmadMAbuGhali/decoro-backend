@@ -14,6 +14,8 @@ import adminAuthRouter from "./modules/admin/adminAuth.routes.js";
 import adminUsersRouter from "./modules/admin/adminUsers.routes.js";
 
 import reviewRouter from "./modules/reviews/review.route.js";
+import waRouter from "./modules/wa/wa.route.js";
+
 
 
 import errorHandler from "./middleware/errorHandler.js";
@@ -40,7 +42,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/verify", verificationRoutes);
 app.use("/api/reviews", reviewRouter);
-
+app.use("/api/wa", waRouter);
 app.use("/api/admin/auth", adminAuthRouter);
 app.use("/api/admin/users", adminUsersRouter);
 

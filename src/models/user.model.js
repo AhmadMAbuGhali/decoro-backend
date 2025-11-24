@@ -30,6 +30,8 @@ const userSchema = new mongoose.Schema(
 
     resetPasswordCode: String,
     resetPasswordExpires: Date,
+    phone: { type: String, index: true, sparse: true },
+  phoneVerified: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
